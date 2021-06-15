@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::collections::VecDeque;
 
 mod models;
-use models::ball::{ Ball, INIT_X, INIT_Y, INIT_R };
+use models::ball::{ Ball, INIT_X, INIT_Y, INIT_R, BallStatus };
 use models::player::Player;
 use models::player::Direction;
 use models::win_status::WinStatus;
@@ -48,7 +48,9 @@ fn model(app: &App) -> Model {
     let ball = Ball::new(
         vec2(0.0, 0.0),
         vec2(INIT_X, INIT_Y),
-        10.0
+        INIT_R,
+        0.0,
+        BallStatus::Normal,
     );
     let player = Player::new(
         pt2(0.0, -280.0),
@@ -93,10 +95,18 @@ fn model(app: &App) -> Model {
 // 1/60sごとに実行される関数。
 fn update(app: &App, model: &mut Model, _update: Update) {
     match model.win_status {
-        WinStatus::Normal => {l
+        WinStatus::Normal => {
             let reflect_flg = model.ball.reflect(app, &model.player);
-            if reflect_flg { model.ball.clone().reflect_sound(app, model) }
-            model.ball.go();
+            if reflect_flg { model.ball.clone().reflect_sound(app, model); }
+            match model.ball.status {
+                BallStatus::Normal => model.ball.go(),
+                _ => {
+                    // not implemented.
+                    // model.ball.explode(); // ballが爆発するgifにする。
+                    model.win_status = WinStatus::GameOver;
+                    // if judge_high_score() {}
+                },
+            }
         },
         _ => {}
     }
@@ -115,7 +125,7 @@ fn key_pressed(_app: &App, model: &mut Model, key: Key) {
             } else if hidden_cmds == SPEED_DOWN_CMD {
                 model.ball.quite_speed_down();
             } else if hidden_cmds == CLEAR_CMD {
-                model.ball.set_initial_speed();
+                model.ball.set_initial_state();
             }
 
             model.game_config.hidden_cmds = hidden_cmds;
@@ -147,6 +157,17 @@ fn key_pressed(_app: &App, model: &mut Model, key: Key) {
                 _ => {}
             }
         },
+        WinStatus::GameOver => {
+            match key {
+                Key::R => {
+                    // retry処理
+                    model.win_status = WinStatus::Normal;
+                    model.ball.set_initial_state();
+                    model.game_config.set_initial_state();
+                },
+                _ => {}
+            }
+        }
         _ => {}
     }
 }

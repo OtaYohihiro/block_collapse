@@ -12,7 +12,7 @@ use crate::models::player::Direction;
 pub fn draw_playing_view(app: &App, model: &Model) {
     let draw = app.draw();
 
-    draw.ellipse().xy(model.ball.p).radius(ball.r).color(RED);
+    draw.ellipse().xy(model.ball.p).radius(model.ball.r).color(RED);
     match model.player.dir {
         Direction::Left => {
             draw.texture(
