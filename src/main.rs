@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::collections::VecDeque;
 
 mod models;
-use models::ball::{Ball, INIT_X, INIT_Y};
+use models::ball::{ Ball, INIT_X, INIT_Y, INIT_R };
 use models::player::Player;
 use models::player::Direction;
 use models::win_status::WinStatus;
@@ -48,6 +48,7 @@ fn model(app: &App) -> Model {
     let ball = Ball::new(
         vec2(0.0, 0.0),
         vec2(INIT_X, INIT_Y),
+        10.0
     );
     let player = Player::new(
         pt2(0.0, -280.0),
@@ -92,8 +93,8 @@ fn model(app: &App) -> Model {
 // 1/60sごとに実行される関数。
 fn update(app: &App, model: &mut Model, _update: Update) {
     match model.win_status {
-        WinStatus::Normal => {
-            let reflect_flg = model.ball.reflect(app);
+        WinStatus::Normal => {l
+            let reflect_flg = model.ball.reflect(app, &model.player);
             if reflect_flg { model.ball.clone().reflect_sound(app, model) }
             model.ball.go();
         },

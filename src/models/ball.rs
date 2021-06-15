@@ -1,25 +1,30 @@
 use nannou::app::App;
 use nannou::geom::vector::{ Vector2, vec2 };
 use crate::Model;
+use crate::models::player::Player;
 
 pub const INIT_X: f32 = 60.0;
 pub const INIT_Y: f32 = 120.0;
+pub const INIT_R: f32 = 10.0;
 #[derive(Clone)]
 pub struct Ball {
     pub p: Vector2,
     pub v: Vector2,
+    pub r: f32,
 }
 
 impl Ball {
-    pub fn new(p: Vector2, v: Vector2) -> Ball {
-      Ball {p, v}
+    pub fn new(p: Vector2, v: Vector2, r: f32) -> Ball {
+      Ball {p, v, r}
     }
 
     pub fn go(&mut self) {
         self.p += self.v / 60.0
     }
 
-    pub fn reflect(&mut self, app: &App) -> bool {
+    /// 反射のしたらtrueを返し、ballの向きを返る。
+    pub fn reflect(&mut self, app: &App, player: &Player) -> bool {
+        // 壁との当たり判定
         let win = app.window_rect();
 
         if self.p.x <= win.left() && self.v.x <= 0.0 {
@@ -39,6 +44,8 @@ impl Ball {
             self.v.y *= -1.0;
             return true
         }
+
+        // playerとの当たり判定
 
         return false
     }
