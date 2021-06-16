@@ -13,7 +13,7 @@ pub fn execute(model: &mut Model, key: Key) {
             let mut hidden_cmds = model.game_config.hidden_cmds.clone();
             hidden_cmds.push_back(key);
             if hidden_cmds.len() == 6 { hidden_cmds.pop_front(); }
-            // 隠しコマンド発動
+            // 隠しコマンド発動. VecQueueとArrayの比較なので、matchは使えない。
             if hidden_cmds == SPEED_UP_CMD {
                 model.ball.madly_speed_up();
             } else if hidden_cmds == SPEED_DOWN_CMD {
