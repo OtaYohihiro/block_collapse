@@ -1,5 +1,8 @@
-use nannou::geom::vector::{Vector2, vec2};
-use nannou::geom::point::Point2;
+use nannou::geom::vector::{ Vector2, vec2 };
+use nannou::geom::point::{ Point2, pt2 };
+
+pub const P_Y: f32 = -280.0;
+pub const P_SIZE: f32 = 40.0;
 
 pub enum Direction {
     Front,
@@ -20,6 +23,12 @@ impl Player {
     }
 
     pub fn go(&mut self, direction: i8) {
-        self.xy += vec2(5.0, 0.0) * direction as f32
+        self.xy += vec2(10.0, 0.0) * direction as f32
+    }
+
+    pub fn set_initial_state(&mut self) {
+        self.xy = pt2(0.0, P_Y);
+        self.wh = vec2(P_SIZE, P_SIZE);
+        self.dir = Direction::Front;
     }
 }

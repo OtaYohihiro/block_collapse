@@ -110,7 +110,6 @@ impl Ball {
     }
 
     pub fn set_initial_state(&mut self) {
-        println!("initial set up.");
         self.v = vec2(INIT_X, INIT_Y);
         self.r = INIT_R;
         self.p = vec2(0.0, 0.0);

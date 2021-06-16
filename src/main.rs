@@ -6,14 +6,15 @@ use std::collections::VecDeque;
 
 mod models;
 use models::ball::{ Ball, INIT_X, INIT_Y, INIT_R, BallStatus };
-use models::player::Player;
+use models::player::{ Player, P_Y, P_SIZE };
 use models::player::Direction;
 use models::win_status::WinStatus;
 use models::game_config::{ GameConfig, SPEED_UP_CMD, SPEED_DOWN_CMD, CLEAR_CMD };
 
 mod lib;
 use lib::utils::*;
-use lib::draw_view::*;
+use lib::draw_view;
+use lib::{ handle_key_pressed, handle_key_released } ;
 
 fn main() {
     nannou::app(model)
@@ -53,8 +54,8 @@ fn model(app: &App) -> Model {
         BallStatus::Normal,
     );
     let player = Player::new(
-        pt2(0.0, -280.0),
-        vec2(45.0, 45.0),
+        pt2(0.0, P_Y),
+        vec2(P_SIZE, P_SIZE),
         Direction::Front,
     );
 
@@ -100,11 +101,10 @@ fn update(app: &App, model: &mut Model, _update: Update) {
             if reflect_flg { model.ball.clone().reflect_sound(app, model); }
             match model.ball.status {
                 BallStatus::Normal => model.ball.go(),
-                _ => {
+                BallStatus::Failed => {
                     // not implemented.
                     // model.ball.explode(); // ballが爆発するgifにする。
                     model.win_status = WinStatus::GameOver;
-                    // if judge_high_score() {}
                 },
             }
         },
@@ -113,81 +113,11 @@ fn update(app: &App, model: &mut Model, _update: Update) {
 }
 
 fn key_pressed(_app: &App, model: &mut Model, key: Key) {
-    match model.win_status {
-        WinStatus::Normal => {
-            // 隠しコマンド判定
-            let mut hidden_cmds = model.game_config.hidden_cmds.clone();
-            hidden_cmds.push_back(key);
-            if hidden_cmds.len() == 6 { hidden_cmds.pop_front(); }
-            // 隠しコマンド発動
-            if hidden_cmds == SPEED_UP_CMD {
-                model.ball.madly_speed_up();
-            } else if hidden_cmds == SPEED_DOWN_CMD {
-                model.ball.quite_speed_down();
-            } else if hidden_cmds == CLEAR_CMD {
-                model.ball.set_initial_state();
-            }
-
-            model.game_config.hidden_cmds = hidden_cmds;
-
-            match key {
-                Key::Left => {
-                    model.player.go(-1);
-                    model.player.dir = Direction::Left;
-                },
-                Key::Right => {
-                    model.player.go(1);
-                    model.player.dir = Direction::Right;
-                },
-                Key::X => {
-                    println!("X pressed!!");
-                    model.win_status = WinStatus::Pause;
-                },
-                _ => {}
-            }
-        },
-        WinStatus::Pause => {
-            match key {
-                Key::Up => println!("Up!!"),
-                Key::Down => println!("Down!!"),
-                Key::X => {
-                    println!("X pressed!!");
-                    model.win_status = WinStatus::Normal;
-                },
-                _ => {}
-            }
-        },
-        WinStatus::GameOver => {
-            match key {
-                Key::R => {
-                    // retry処理
-                    model.win_status = WinStatus::Normal;
-                    model.ball.set_initial_state();
-                    model.game_config.set_initial_state();
-                },
-                _ => {}
-            }
-        }
-        _ => {}
-    }
+    handle_key_pressed::execute(model, key);
 }
 
 fn key_released(_app: &App, model: &mut Model, key: Key) {
-    match model.win_status {
-        WinStatus::Normal => {
-            match key {
-                Key::Left => {
-                    model.player.dir = Direction::Front;
-                },
-                Key::Right => {
-                    model.player.dir = Direction::Front;
-                },
-                _ => {}
-            }
-        },
-        _ => {}
-    }
-
+    handle_key_released::execute(model, key);
 }
 
 // A function that renders the given `Audio` to the given `Buffer`.
@@ -226,8 +156,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
     // https://docs.rs/nannou/0.16.0/src/nannou/app.rs.html#893-897
     // draw()が呼び出す度reset()が走るためです。
     let draw = app.draw();
-    // 通常のプレイ画面を描画する。
-    draw_playing_view(app, model);
+    draw_view::execute(app, model);
     draw.to_frame(app, &frame).unwrap();
 }
 
