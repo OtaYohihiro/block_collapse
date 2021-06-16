@@ -21,4 +21,8 @@ impl GameConfig {
     pub fn new(score: u16, hidden_cmds: VecDeque<Key>) -> GameConfig {
         GameConfig {score, hidden_cmds}
     }
+
+    pub fn set_initial_state(&mut self) {
+        self.score = 0;
+    }
 }
