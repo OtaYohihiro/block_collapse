@@ -2,19 +2,16 @@ use nannou::prelude::*;
 use nannou_audio as audio;
 use nannou_audio::Buffer;
 use std::collections::HashMap;
-use std::collections::VecDeque;
 
 mod models;
-use models::ball::{ Ball, INIT_X, INIT_Y, INIT_R, BallStatus };
-use models::player::{ Player, P_Y, P_SIZE };
-use models::player::Direction;
+use models::ball::{ Ball, BallStatus };
+use models::player:: Player;
+use models::block::Block;
 use models::win_status::WinStatus;
-use models::game_config::{ GameConfig, SPEED_UP_CMD, SPEED_DOWN_CMD, CLEAR_CMD };
+use models::game_config::GameConfig;
 
 mod lib;
-use lib::utils::*;
-use lib::draw_view;
-use lib::{ handle_key_pressed, handle_key_released } ;
+use lib::{ draw_view, handle_key_pressed, handle_key_released, build_model } ;
 
 fn main() {
     nannou::app(model)
@@ -33,64 +30,12 @@ pub struct Model {
     game_config: GameConfig,
 }
 
-struct Audio {
+pub struct Audio {
     sounds: Vec<audrey::read::BufFileReader>,
 }
 
 fn model(app: &App) -> Model {
-    app.new_window()
-        //.size(600, 400)
-        .key_pressed(key_pressed)
-        .key_released(key_released)
-        .view(view)
-        .build()
-        .unwrap();
-
-    let ball = Ball::new(
-        vec2(0.0, 0.0),
-        vec2(INIT_X, INIT_Y),
-        INIT_R,
-        0.0,
-        BallStatus::Normal,
-    );
-    let player = Player::new(
-        pt2(0.0, P_Y),
-        vec2(P_SIZE, P_SIZE),
-        Direction::Front,
-    );
-
-    // Initialize textures.
-    let mut textures = HashMap::new();
-    let player_textures: HashMap<String, wgpu::Texture> = load_imgs(
-        app,
-        vec![
-          ["normal".to_string(), "tibichar.gif".to_string()],
-          ["l_run".to_string(), "tibichar_l_run.gif".to_string()],
-          ["r_run".to_string(), "tibichar_r_run.gif".to_string()],
-        ]
-    );
-    textures.insert("player".to_string(), player_textures);
-
-    // Initialise the audio host so we can spawn an audio stream.
-    let audio_host = audio::Host::new();
-    // Initialise the state that we want to live on the audio thread.
-    let sounds = vec![];
-    let model = Audio { sounds };
-    let stream = audio_host
-        .new_output_stream(model)
-        .render(audio)
-        .build()
-        .unwrap();
-
-    let game_config = GameConfig::new(0, VecDeque::new());
-    Model {
-        ball,
-        player,
-        textures,
-        stream,
-        win_status: WinStatus::Normal,
-        game_config,
-    }
+    build_model::execute(app)
 }
 
 // 1/60sごとに実行される関数。
@@ -112,17 +57,17 @@ fn update(app: &App, model: &mut Model, _update: Update) {
     }
 }
 
-fn key_pressed(_app: &App, model: &mut Model, key: Key) {
+pub fn key_pressed(_app: &App, model: &mut Model, key: Key) {
     handle_key_pressed::execute(model, key);
 }
 
-fn key_released(_app: &App, model: &mut Model, key: Key) {
+pub fn key_released(_app: &App, model: &mut Model, key: Key) {
     handle_key_released::execute(model, key);
 }
 
 // A function that renders the given `Audio` to the given `Buffer`.
 // In this case we play the audio file.
-fn audio(audio: &mut Audio, buffer: &mut Buffer) {
+pub fn audio(audio: &mut Audio, buffer: &mut Buffer) {
     let mut have_ended = vec![];
     let len_frames = buffer.len_frames();
 
@@ -149,7 +94,7 @@ fn audio(audio: &mut Audio, buffer: &mut Buffer) {
     }
 }
 
-fn view(app: &App, model: &Model, frame: Frame) {
+pub fn view(app: &App, model: &Model, frame: Frame) {
     frame.clear(PURPLE);
 
     // NOTE: ここでdrawを宣言しないとplayerやballが描画されなくなる。

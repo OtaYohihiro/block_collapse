@@ -1,7 +1,6 @@
 pub enum WinStatus {
     Normal,
     Title,
-    Pause,
-    MenuOpened,
+    Menu,
     GameOver
 }

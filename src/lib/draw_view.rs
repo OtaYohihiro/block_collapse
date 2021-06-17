@@ -14,6 +14,7 @@ pub fn execute(app: &App, model: &Model) {
         WinStatus::Title => draw_title_view(app, model),
         WinStatus::Normal => draw_normal_view(app, model),
         WinStatus::GameOver => draw_gameover_view(app, model),
+        WinStatus::Menu => draw_menu_view(app, model),
         _ => (),
     }
 }
@@ -76,3 +77,16 @@ fn draw_title_view(app: &App, _model: &Model) {
     draw.text("Press S to start")
         .xy(pt2(0.0, 0.0));
 }
+
+fn draw_menu_view(app: &App, _model: &Model) {
+    let draw = app.draw();
+
+    let win = app.window_rect();
+    let padding = 30.0;
+    draw.text("Menu screen")
+        .xy(pt2(win.right() - padding * 2.0, win.top() - padding));
+
+    draw.text("Press X to close")
+        .xy(pt2(0.0, 0.0));
+}
+

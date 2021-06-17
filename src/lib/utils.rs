@@ -25,7 +25,6 @@ pub fn load_imgs(
 }
 
 pub fn is_high_score() -> bool {
-    // file存在チェック。なければtrueを返す。
     // あればファイル内を解析して、上位10位に入っているかで判断。
     // cf: https://doc.rust-jp.rs/rust-by-example-ja/std_misc/fs.html
     return true;

@@ -35,12 +35,12 @@ pub fn execute(model: &mut Model, key: Key) {
                 },
                 Key::X => {
                     println!("X pressed!!");
-                    model.win_status = WinStatus::Pause;
+                    model.win_status = WinStatus::Menu;
                 },
                 _ => {}
             }
         },
-        WinStatus::Pause => {
+        WinStatus::Menu => {
             match key {
                 Key::Up => println!("Up!!"),
                 Key::Down => println!("Down!!"),
@@ -71,6 +71,5 @@ pub fn execute(model: &mut Model, key: Key) {
                 _ => {}
             }
         },
-        _ => {}
     }
 }

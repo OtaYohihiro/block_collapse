@@ -6,7 +6,6 @@ pub const P_SIZE: f32 = 40.0;
 
 pub enum Direction {
     Front,
-    Back,
     Left,
     Right
 }
