@@ -8,16 +8,16 @@ use crate::models::player::Player;
 pub const INIT_X: f32 = 60.0;
 pub const INIT_Y: f32 = 120.0;
 pub const INIT_R: f32 = 10.0;
-const CONTACT_DURATION: f32 = 0.2; // frameかと思いきや、秒数だった。
+const CONTACT_DURATION: f32 = 0.15; // frameかと思いきや、秒数だった。
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub enum BallStatus {
   Normal,
   Failed,
 }
 
 // latest_contact_at: playerとの最終接触時間をframeRateで記録しておく。
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Ball {
     pub p: Vector2,
     pub v: Vector2,

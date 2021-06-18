@@ -43,11 +43,10 @@ fn model(app: &App) -> Model {
 fn update(app: &App, model: &mut Model, _update: Update) {
     match model.win_status {
         WinStatus::Normal => {
-            let reflect_flg = model.ball.reflect(app, &model.player);
-            if reflect_flg { model.ball.clone().reflect_sound(app, model); }
+            let mut c_ball = model.ball;
+            let reflect_flg = c_ball.reflect(app, &model.player);
+            if reflect_flg { c_ball.reflect_sound(app, model); }
 
-            // TODO: ここらへん、cloneせずにやらんと効率悪すぎやろ...Rcとか使うのかな...
-            let mut c_ball = model.ball.clone();
             let mut c_blocks = model.blocks.clone();
             let mut index = MAX_B_NUM;
             for (idx, block) in c_blocks.iter_mut().enumerate() {
@@ -58,8 +57,8 @@ fn update(app: &App, model: &mut Model, _update: Update) {
                 }
             }
             model.blocks = c_blocks;
-            if index != MAX_B_NUM { model.blocks.remove(index.into()); }
             model.ball = c_ball;
+            if index != MAX_B_NUM { model.blocks.remove(index.into()); }
 
             match model.ball.status {
                 BallStatus::Normal => model.ball.go(),
