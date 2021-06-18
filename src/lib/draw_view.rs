@@ -4,23 +4,29 @@
 use nannou::app::App;
 use nannou::prelude::RED;
 use nannou::geom::point::pt2;
+use nannou::geom::vector::vec2;
+use nannou::draw::Draw;
+use nannou::geom::rect::Rect;
+use nannou::app::DrawScalar;
 
 use crate::Model;
 use crate::models::player::Direction;
 use crate::models::win_status::WinStatus;
 
 pub fn execute(app: &App, model: &Model) {
+    let draw = app.draw();
+    let win = app.window_rect();
+
     match model.win_status {
-        WinStatus::Title => draw_title_view(app, model),
-        WinStatus::Normal => draw_normal_view(app, model),
-        WinStatus::GameOver => draw_gameover_view(app, model),
-        WinStatus::Menu => draw_menu_view(app, model),
+        WinStatus::Title => draw_title_view(&draw, &win, model),
+        WinStatus::Normal => draw_normal_view(&draw, &win, model),
+        WinStatus::GameOver => draw_gameover_view(&draw, &win, model),
+        WinStatus::Menu => draw_menu_view(&draw, &win, model),
     }
 }
 
 /// プレイ画面のviewをdrawする。
-fn draw_normal_view(app: &App, model: &Model) {
-    let draw = app.draw();
+fn draw_normal_view(draw: &Draw, win: &Rect<DrawScalar>, model: &Model) {
 
     // ball描画
     draw.ellipse().xy(model.ball.p).radius(model.ball.r).color(RED);
@@ -28,23 +34,17 @@ fn draw_normal_view(app: &App, model: &Model) {
     match model.player.dir {
         Direction::Left => {
             draw.texture(
-                model.textures
-                    .get(&"player".to_string()).unwrap()
-                    .get(&"l_run".to_string()).unwrap()
+                model.textures.get("player").unwrap().get("l_run").unwrap()
             ).xy(model.player.xy).wh(model.player.wh);
         },
         Direction::Right => {
             draw.texture(
-                model.textures
-                    .get(&"player".to_string()).unwrap()
-                    .get(&"r_run".to_string()).unwrap()
+                model.textures.get("player").unwrap().get("r_run").unwrap()
             ).xy(model.player.xy).wh(model.player.wh);
         },
         _ => {
             draw.texture(
-                model.textures
-                    .get(&"player".to_string()).unwrap()
-                    .get(&"normal".to_string()).unwrap()
+                model.textures.get("player").unwrap().get("normal").unwrap()
             ).xy(model.player.xy).wh(model.player.wh);
         }
     }
@@ -54,16 +54,12 @@ fn draw_normal_view(app: &App, model: &Model) {
     }
 
     // score表示
-    let win = app.window_rect();
     let padding = 30.0;
     draw.text(&format!("score: {}", model.game_config.score))
         .xy(pt2(win.right() - padding * 2.0, win.top() - padding));
 }
 
-fn draw_gameover_view(app: &App, _model: &Model) {
-    let draw = app.draw();
-
-    let win = app.window_rect();
+fn draw_gameover_view(draw: &Draw, win: &Rect<DrawScalar>, _model: &Model) {
     let padding = 30.0;
     draw.text("Game Over...")
         .xy(pt2(win.right() - padding * 2.0, win.top() - padding));
@@ -71,25 +67,22 @@ fn draw_gameover_view(app: &App, _model: &Model) {
         .xy(pt2(0.0, 0.0));
 }
 
-fn draw_title_view(app: &App, _model: &Model) {
-    let draw = app.draw();
-
-    let win = app.window_rect();
-    let padding = 30.0;
-    draw.text("Title Screen")
-        .xy(pt2(win.right() - padding * 2.0, win.top() - padding));
+fn draw_title_view(draw: &Draw, _win: &Rect<DrawScalar>, model: &Model) {
+    draw.texture(
+        model.textures
+            .get("title").unwrap()
+            .get("title").unwrap()
+    ).xy(pt2(0.0, 0.0)).wh(vec2(400.0, 150.0));
 
     draw.text("Press S to start")
-        .xy(pt2(0.0, 0.0));
+        .xy(pt2(0.0, 150.0));
 }
 
-fn draw_menu_view(app: &App, _model: &Model) {
-    let draw = app.draw();
-
-    let win = app.window_rect();
+fn draw_menu_view(draw: &Draw, win: &Rect<DrawScalar>, model: &Model) {
+    draw_normal_view(draw, win, model);
     let padding = 30.0;
     draw.text("Menu screen")
-        .xy(pt2(win.right() - padding * 2.0, win.top() - padding));
+        .xy(pt2(win.left() + padding * 2.0, win.top() - padding));
 
     draw.text("Press X to close")
         .xy(pt2(0.0, 0.0));

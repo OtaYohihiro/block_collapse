@@ -66,6 +66,13 @@ pub fn execute(app: &App) -> Model {
         ]
     );
     textures.insert("player".to_string(), player_textures);
+    let title_textures: HashMap<String, wgpu::Texture> = load_imgs(
+        app,
+        vec![
+          ["title".to_string(), "title_logo.png".to_string()],
+        ]
+    );
+    textures.insert("title".to_string(), title_textures);
 
     // Initialise the audio host so we can spawn an audio stream.
     let audio_host = audio::Host::new();
@@ -85,7 +92,7 @@ pub fn execute(app: &App) -> Model {
         blocks,
         textures,
         stream,
-        win_status: WinStatus::Normal,
+        win_status: WinStatus::Title,
         game_config,
     }
 }
