@@ -15,7 +15,6 @@ pub fn execute(app: &App, model: &Model) {
         WinStatus::Normal => draw_normal_view(app, model),
         WinStatus::GameOver => draw_gameover_view(app, model),
         WinStatus::Menu => draw_menu_view(app, model),
-        _ => (),
     }
 }
 
@@ -23,7 +22,9 @@ pub fn execute(app: &App, model: &Model) {
 fn draw_normal_view(app: &App, model: &Model) {
     let draw = app.draw();
 
+    // ball描画
     draw.ellipse().xy(model.ball.p).radius(model.ball.r).color(RED);
+    // player描画
     match model.player.dir {
         Direction::Left => {
             draw.texture(
@@ -46,6 +47,10 @@ fn draw_normal_view(app: &App, model: &Model) {
                     .get(&"normal".to_string()).unwrap()
             ).xy(model.player.xy).wh(model.player.wh);
         }
+    }
+    // block描画
+    for block in model.blocks.iter() {
+        draw.ellipse().xy(block.p).radius(block.r).color(block.color());
     }
 
     // score表示

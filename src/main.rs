@@ -6,7 +6,7 @@ use std::collections::HashMap;
 mod models;
 use models::ball::{ Ball, BallStatus };
 use models::player:: Player;
-use models::block::Block;
+use models::block::{ Block, MAX_B_NUM };
 use models::win_status::WinStatus;
 use models::game_config::GameConfig;
 
@@ -24,6 +24,7 @@ fn main() {
 pub struct Model {
     ball: Ball,
     player: Player,
+    blocks: Vec<Block>,
     textures: HashMap<String, HashMap<String, wgpu::Texture>>,
     stream: audio::Stream<Audio>,
     win_status: WinStatus,
@@ -44,6 +45,22 @@ fn update(app: &App, model: &mut Model, _update: Update) {
         WinStatus::Normal => {
             let reflect_flg = model.ball.reflect(app, &model.player);
             if reflect_flg { model.ball.clone().reflect_sound(app, model); }
+
+            // TODO: ここらへん、cloneせずにやらんと効率悪すぎやろ...Rcとか使うのかな...
+            let mut c_ball = model.ball.clone();
+            let mut c_blocks = model.blocks.clone();
+            let mut index = MAX_B_NUM;
+            for (idx, block) in c_blocks.iter_mut().enumerate() {
+                if block.reflect(app, &mut c_ball) {
+                    block.reflect_sound(app, model);
+                    if block.life == 0 { index = idx as u16 }
+                    break;
+                }
+            }
+            model.blocks = c_blocks;
+            if index != MAX_B_NUM { model.blocks.remove(index.into()); }
+            model.ball = c_ball;
+
             match model.ball.status {
                 BallStatus::Normal => model.ball.go(),
                 BallStatus::Failed => {

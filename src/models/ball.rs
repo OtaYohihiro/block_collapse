@@ -8,7 +8,7 @@ use crate::models::player::Player;
 pub const INIT_X: f32 = 60.0;
 pub const INIT_Y: f32 = 120.0;
 pub const INIT_R: f32 = 10.0;
-const CONTACT_DURATION: f32 = 12.0; // 12frameなので0.2sで一旦。
+const CONTACT_DURATION: f32 = 0.2; // frameかと思いきや、秒数だった。
 
 #[derive(Clone)]
 pub enum BallStatus {
@@ -80,7 +80,7 @@ impl Ball {
         if dist <= r_sum && duration >= CONTACT_DURATION {
             self.latest_contact_at = app.time;
             self.v.y *= -1.0;
-            return true;
+           return true;
         }
 
         return false

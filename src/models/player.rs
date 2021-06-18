@@ -3,6 +3,7 @@ use nannou::geom::point::{ Point2, pt2 };
 
 pub const P_Y: f32 = -280.0;
 pub const P_SIZE: f32 = 40.0;
+const PACE: f32 = 15.0;
 
 pub enum Direction {
     Front,
@@ -22,7 +23,7 @@ impl Player {
     }
 
     pub fn go(&mut self, direction: i8) {
-        self.xy += vec2(10.0, 0.0) * direction as f32
+        self.xy += vec2(PACE, 0.0) * direction as f32
     }
 
     pub fn set_initial_state(&mut self) {
