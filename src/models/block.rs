@@ -26,9 +26,9 @@ impl Block {
 
     pub fn color(&self) -> Rgb<Srgb, u8> {
         match &self.life {
-            &3 => return FIREBRICK,
-            &2 => return MEDIUMTURQUOISE,
-            &1 => return CYAN,
+            &3 => return CYAN,
+            &2 => return GOLD,
+            &1 => return FIREBRICK,
             _ => return GHOSTWHITE,
         }
     }
@@ -55,7 +55,7 @@ impl Block {
     }
 
     pub fn reflect_sound(&self, app: &App, model: &mut Model) {
-        model.game_config.score += 100;
+        model.game_config.score += 10000;
 
         let assets = app.assets_path().unwrap();
         let path = assets.join("sounds").join("反射音.wav");

@@ -38,6 +38,7 @@ pub fn execute(app: &App) -> Model {
         vec2(P_SIZE, P_SIZE),
         Direction::Front,
     );
+    println!("{:?}", app.project_path());
 
     let mut blocks: Vec<Block> = vec![];
     let win = app.window_rect();

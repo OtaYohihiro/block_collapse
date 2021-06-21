@@ -1,6 +1,5 @@
 /// スタート画面、メニュー画面、プレイ画面、
 /// ゲームオーバ画面などをdrawする関数を格納します。
-
 use nannou::app::App;
 use nannou::prelude::RED;
 use nannou::geom::point::pt2;
@@ -13,6 +12,8 @@ use crate::Model;
 use crate::models::player::Direction;
 use crate::models::win_status::WinStatus;
 
+use crate::lib::draw_view_lib::draw_gameover_view;
+
 pub fn execute(app: &App, model: &Model) {
     let draw = app.draw();
     let win = app.window_rect();
@@ -20,7 +21,7 @@ pub fn execute(app: &App, model: &Model) {
     match model.win_status {
         WinStatus::Title => draw_title_view(&draw, &win, model),
         WinStatus::Normal => draw_normal_view(&draw, &win, model),
-        WinStatus::GameOver => draw_gameover_view(&draw, &win, model),
+        WinStatus::GameOver => draw_gameover_view::execute(&draw, &win, model),
         WinStatus::Menu => draw_menu_view(&draw, &win, model),
     }
 }
@@ -59,14 +60,6 @@ fn draw_normal_view(draw: &Draw, win: &Rect<DrawScalar>, model: &Model) {
         .xy(pt2(win.right() - padding * 2.0, win.top() - padding));
 }
 
-fn draw_gameover_view(draw: &Draw, win: &Rect<DrawScalar>, _model: &Model) {
-    let padding = 30.0;
-    draw.text("Game Over...")
-        .xy(pt2(win.right() - padding * 2.0, win.top() - padding));
-    draw.text("Press T to title")
-        .xy(pt2(0.0, 0.0));
-}
-
 fn draw_title_view(draw: &Draw, _win: &Rect<DrawScalar>, model: &Model) {
     draw.texture(
         model.textures
@@ -87,4 +80,3 @@ fn draw_menu_view(draw: &Draw, win: &Rect<DrawScalar>, model: &Model) {
     draw.text("Press X to close")
         .xy(pt2(0.0, 0.0));
 }
-

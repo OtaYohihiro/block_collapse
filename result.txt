@@ -1,0 +1,10 @@
+adam 10000
+bolis 9000
+cathy 8000
+doloria 7000
+elizabeth 6000
+felis 5000
+goliath 4000
+henry 3000
+iris 2000
+juda 1000

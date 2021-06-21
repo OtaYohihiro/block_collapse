@@ -24,12 +24,6 @@ pub fn load_imgs(
     return res
 }
 
-pub fn is_high_score() -> bool {
-    // あればファイル内を解析して、上位10位に入っているかで判断。
-    // cf: https://doc.rust-jp.rs/rust-by-example-ja/std_misc/fs.html
-    return true;
-}
-
 pub fn set_initial_state(model: &mut Model) {
     model.win_status = WinStatus::Normal;
     model.ball.set_initial_state();
