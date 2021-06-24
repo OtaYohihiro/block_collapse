@@ -71,5 +71,8 @@ pub fn execute(model: &mut Model, key: Key) {
                 _ => {}
             }
         },
+        WinStatus::RecordBreak => {
+            ()
+        },
     }
 }

@@ -65,7 +65,11 @@ fn update(app: &App, model: &mut Model, _update: Update) {
                 BallStatus::Failed => {
                     // not implemented.
                     // model.ball.explode(); // ballが爆発するgifにする。
-                    model.win_status = WinStatus::GameOver;
+                    if model.game_config.score >= model.game_config.min_score {
+                        model.win_status = WinStatus::RecordBreak;
+                    } else {
+                        model.win_status = WinStatus::GameOver;
+                    }
                 },
             }
         },

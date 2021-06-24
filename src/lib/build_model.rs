@@ -14,7 +14,7 @@ use crate::models::player::{ Player, Direction, P_Y, P_SIZE };
 use crate::models::game_config::GameConfig;
 use crate::models::win_status::WinStatus;
 use crate::{ key_pressed, key_released, view, audio };
-use crate::lib::utils::load_imgs;
+use crate::lib::utils::{ load_imgs, retrieve_high_scores };
 
 
 pub fn execute(app: &App) -> Model {
@@ -86,7 +86,8 @@ pub fn execute(app: &App) -> Model {
         .build()
         .unwrap();
 
-    let game_config = GameConfig::new(0, VecDeque::new());
+    let min_score = retrieve_high_scores(&10_000_000).last().unwrap().1;
+    let game_config = GameConfig::new(0, min_score, VecDeque::new());
     Model {
         ball,
         player,

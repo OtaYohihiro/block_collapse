@@ -13,13 +13,14 @@ pub const CLEAR_CMD: [Key; 5] = [
 ];
 
 pub struct GameConfig {
-    pub score: u16,
+    pub score: usize,
+    pub min_score: usize,
     pub hidden_cmds: VecDeque<Key>,
 }
 
 impl GameConfig {
-    pub fn new(score: u16, hidden_cmds: VecDeque<Key>) -> GameConfig {
-        GameConfig {score, hidden_cmds}
+    pub fn new(score: usize, min_score: usize, hidden_cmds: VecDeque<Key>) -> GameConfig {
+        GameConfig {score, min_score, hidden_cmds}
     }
 
     pub fn set_initial_state(&mut self) {
