@@ -13,9 +13,9 @@ const NO_NAME: &str = "no_name";
 pub fn execute(draw: &Draw, _win: &Rect<DrawScalar>, model: &Model) {
     draw_high_scores(draw, &model.game_config.score);
     draw.text("Game Over...")
-        .xy(pt2(0.0, -20.0));
+        .xy(pt2(0.0, -30.0));
     draw.text("Press T to title")
-        .xy(pt2(0.0, -70.0));
+        .xy(pt2(0.0, -80.0));
 }
 
 fn draw_high_scores(draw: &Draw, score: &usize) {
@@ -32,11 +32,7 @@ fn draw_high_scores(draw: &Draw, score: &usize) {
 
 fn draw_high_score(draw: &Draw, idx: usize, s: &(String, usize)) {
     let mut draw_color = WHITE;
-    if &s.0 == NO_NAME {
-        draw.text("Break a Record!!")
-            .xy(pt2(0.0, 355.0)).font_size(20);
-        draw_color = RED;
-    }
+    if &s.0 == NO_NAME { draw_color = RED }
     draw.text(&(idx + 1).to_string())
         .xy(pt2(-150.0, 280.0 - idx as f32 * 25.0)).color(draw_color);
     draw.text(&s.0)

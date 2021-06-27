@@ -1,6 +1,7 @@
 /// スタート画面、メニュー画面、プレイ画面、
 /// ゲームオーバ画面などをdrawする関数を格納します。
 use nannou::app::App;
+use nannou::color::*;
 use nannou::geom::point::pt2;
 use nannou::geom::vector::vec2;
 use nannou::draw::Draw;
@@ -21,7 +22,7 @@ pub fn execute(app: &App, model: &Model) {
         WinStatus::Normal => draw_normal_view::execute(&draw, &win, model),
         WinStatus::Menu => draw_menu_view(&draw, &win, model),
         WinStatus::GameOver => draw_gameover_view::execute(&draw, &win, model),
-        WinStatus::RecordBreak => draw_recordbreak_view(&draw, &win, model),
+        WinStatus::RecordBreak => draw_recordbreak_view(app, &draw, &win, model),
     }
 }
 
@@ -47,10 +48,28 @@ fn draw_menu_view(draw: &Draw, win: &Rect<DrawScalar>, model: &Model) {
         .xy(pt2(0.0, 0.0));
 }
 
-fn draw_recordbreak_view(draw: &Draw, win: &Rect<DrawScalar>, model: &Model) {
+fn draw_recordbreak_view(app: &App, draw: &Draw, win: &Rect<DrawScalar>, model: &Model) {
     draw_gameover_view::execute(&draw, &win, model);
     // 名前入力のviewを表示。
-    draw.text("Input your name.")
-        .xy(pt2(-150.0, 10.0));
-    draw.line().points(pt2(-10.0, 0.0), pt2(10.0, 0.0));
+    let color = if app.elapsed_frames() % 24 <= 11 { RED } else { WHITE };
+    draw.text("Break a Record!!").font_size(20).color(color)
+        .xy(pt2(0.0, 355.0));
+    draw.text("Input your name.").font_size(15)
+        .xy(pt2(-90.0, 10.0));
+    let space: f32 = 10.0;
+    for i in 0..7 {
+        // NOTE: https://qiita.com/mHALr/items/26dc38154491d302752b を参考に
+        let mut buffer = [0u8; 4];
+        let ampersand_str: &mut str = model
+            .game_config.input_field[i].encode_utf8(&mut buffer);
+
+        if model.game_config.input_cursor == i {
+            let letter = if app.elapsed_frames() % 24 <= 11 { "■" } else { ampersand_str };
+            draw.text(letter)
+                .xy(pt2(-0.0 + space * i as f32, 0.0));
+        } else {
+            draw.text(ampersand_str)
+                .xy(pt2(-0.0 + space * i as f32, 0.0));
+        }
+    }
 }

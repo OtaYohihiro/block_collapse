@@ -38,7 +38,6 @@ pub fn execute(app: &App) -> Model {
         vec2(P_SIZE, P_SIZE),
         Direction::Front,
     );
-    println!("{:?}", app.project_path());
 
     let mut blocks: Vec<Block> = vec![];
     let win = app.window_rect();
@@ -86,8 +85,16 @@ pub fn execute(app: &App) -> Model {
         .build()
         .unwrap();
 
+    // 1000万点以上撮った人がいるとバグる。まぁ...いっかな。
     let min_score = retrieve_high_scores(&10_000_000).last().unwrap().1;
-    let game_config = GameConfig::new(0, min_score, VecDeque::new());
+    let game_config = GameConfig::new(
+        0,
+        min_score,
+        VecDeque::new(),
+        false,
+        vec!['_', '_', '_', '_', '_', '_', '_', '_', '_', '_'],
+        0
+    );
     Model {
         ball,
         player,

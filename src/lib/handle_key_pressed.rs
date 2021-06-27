@@ -4,7 +4,7 @@ use crate::Model;
 use crate::models::win_status::WinStatus;
 use crate::models::player::Direction;
 use crate::models::game_config::{ SPEED_UP_CMD, SPEED_DOWN_CMD, CLEAR_CMD };
-use crate::lib::utils::set_initial_state;
+use crate::lib::utils::{ set_initial_state, handle_input };
 
 pub fn execute(model: &mut Model, key: Key) {
     match model.win_status {
@@ -72,7 +72,29 @@ pub fn execute(model: &mut Model, key: Key) {
             }
         },
         WinStatus::RecordBreak => {
-            ()
+            // TODO: confirming増えてきたら、Stateパターンにしたほうが良いかも。
+            if model.game_config.confirming {
+                match key {
+                    Key::Return => {
+                        model.game_config.confirming = false;
+                        model.win_status = WinStatus::Title;
+                    },
+                    Key::X => {
+                        model.game_config.confirming = false;
+                    }
+                    _ => {}
+                }
+
+            } else {
+                match key {
+                    Key::Return => {
+                        model.game_config.confirming = true;
+                    },
+                    _ => {
+                        handle_input(model, key, 6);
+                    }
+                }
+            }
         },
     }
 }
