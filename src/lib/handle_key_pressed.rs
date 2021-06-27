@@ -4,7 +4,7 @@ use crate::Model;
 use crate::models::win_status::WinStatus;
 use crate::models::player::Direction;
 use crate::models::game_config::{ SPEED_UP_CMD, SPEED_DOWN_CMD, CLEAR_CMD };
-use crate::lib::utils::{ set_initial_state, handle_input };
+use crate::lib::utils::{ set_initial_state, save_high_scores, handle_input };
 
 pub fn execute(model: &mut Model, key: Key) {
     match model.win_status {
@@ -78,6 +78,8 @@ pub fn execute(model: &mut Model, key: Key) {
                     Key::Return => {
                         model.game_config.confirming = false;
                         model.win_status = WinStatus::Title;
+                        save_high_scores(&model);
+                        set_initial_state(model);
                     },
                     Key::X => {
                         model.game_config.confirming = false;

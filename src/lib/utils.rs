@@ -11,6 +11,8 @@ use crate::wgpu;
 use crate::Model;
 use crate::models::win_status::WinStatus;
 
+const RESULT_PATH: &str = "/Users/ota/project/rust/block_collapse/result.txt";
+pub const NO_NAME: &str = "no_name";
 
 fn load_img(app: &App, file_name: &str) -> wgpu::Texture {
     let assets = app.assets_path().unwrap();
@@ -39,7 +41,7 @@ pub fn set_initial_state(model: &mut Model) {
 
 pub fn retrieve_high_scores(score: &usize) -> Vec<(String, usize)> {
     // TODO: root_pathを渡すようにappを渡してくる...しか無いのかな...
-    let path = Path::new("/Users/ota/project/rust/block_collapse/result.txt");
+    let path = Path::new(RESULT_PATH);
     let display = path.display();
 
     //パスを指定してファイルを開く
@@ -56,7 +58,8 @@ pub fn retrieve_high_scores(score: &usize) -> Vec<(String, usize)> {
     let mut results: Vec<(String, usize)> = vec![];
     let mut index = 10;
     for (idx, line) in reader.lines().enumerate() {
-        let res: Vec<String> = line.unwrap().split_whitespace().map(|x| x.to_string()).collect();
+        let res: Vec<String> = line.unwrap().split_whitespace()
+            .map(|x| x.to_string()).collect();
         let value = res[1].parse::<usize>().unwrap();
         let key = res[0].clone();
         if *score >= value && index == 10 {
@@ -69,17 +72,18 @@ pub fn retrieve_high_scores(score: &usize) -> Vec<(String, usize)> {
     results
 }
 
-pub fn save_high_scores() {
-    // not implemented yet.
+pub fn save_high_scores(model: &Model) {
+    let mut results: Vec<(String, usize)> = retrieve_high_scores(&model.game_config.score);
+    let input_name: String = model.game_config
+        .input_field.iter().take(7)
+        .map(|x| x.to_string())
+        .collect::<Vec<_>>().join("");
+    let index = results.iter().position(|x| x.0 == NO_NAME).unwrap();
+    results[index].0 = input_name;
+    println!("{:?}", results);
 }
 
 pub fn handle_input(model: &mut Model, input: Key, max_idx: usize) {
-    // - s:左右キーを押すと入力フィールドが左右に移動する
-    // - s: カーソルが左端、右端にいる場合はそれ以上横に行けない。
-    // - s:delete Keyを押すと入力をスペースにした上で、cursorが一個戻る。
-    // - s:何か文字を入力するとカーソル位置に応じてフィールドに文字が保存され、cursorが一個進む。
-    // - s:右端で入力をしたら、そこの文字が変わる。
-    println!("{:?}", input);
     let mut c_input_field = model.game_config.input_field.clone();
     let mut c_input_cursor = model.game_config.input_cursor;
     match input {

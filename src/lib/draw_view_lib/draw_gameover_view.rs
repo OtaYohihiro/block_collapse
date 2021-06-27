@@ -5,9 +5,7 @@ use nannou::app::DrawScalar;
 use nannou::prelude::{ RED, WHITE };
 
 use crate::Model;
-use crate::lib::utils::retrieve_high_scores;
-
-const NO_NAME: &str = "no_name";
+use crate::lib::utils::{ retrieve_high_scores, NO_NAME };
 
 
 pub fn execute(draw: &Draw, _win: &Rect<DrawScalar>, model: &Model) {
