@@ -4,9 +4,12 @@ use crate::Model;
 use crate::models::win_status::WinStatus;
 use crate::models::player::Direction;
 use crate::models::game_config::{ SPEED_UP_CMD, SPEED_DOWN_CMD, CLEAR_CMD };
-use crate::lib::utils::{ set_initial_state, save_high_scores, handle_input };
+use crate::lib::utils::{
+    set_initial_state, update_high_scores_and_min_score, handle_input
+};
 
 pub fn execute(model: &mut Model, key: Key) {
+    println!("{:?}", key);
     match model.win_status {
         WinStatus::Normal => {
             // 隠しコマンド判定
@@ -76,9 +79,7 @@ pub fn execute(model: &mut Model, key: Key) {
             if model.game_config.confirming {
                 match key {
                     Key::Return => {
-                        model.game_config.confirming = false;
-                        model.win_status = WinStatus::Title;
-                        save_high_scores(&model);
+                        update_high_scores_and_min_score(model);
                         set_initial_state(model);
                     },
                     Key::X => {

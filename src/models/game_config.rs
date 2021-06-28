@@ -38,6 +38,7 @@ impl GameConfig {
 
     pub fn set_initial_state(&mut self) {
         self.score = 0;
+        self.confirming = false;
         self.set_initial_input_state();
         // self.confirming = false;
     }

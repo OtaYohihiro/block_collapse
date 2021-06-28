@@ -1,8 +1,6 @@
 use std::collections::HashMap;
-use std::io::prelude::*;
-use std::io::BufReader;
+use std::io::{ Write, Read };
 use std::fs::File;
-use std::path::Path;
 
 use nannou::app::App;
 use nannou::prelude::Key;
@@ -33,7 +31,7 @@ pub fn load_imgs(
 }
 
 pub fn set_initial_state(model: &mut Model) {
-    model.win_status = WinStatus::Normal;
+    model.win_status = WinStatus::Title;
     model.ball.set_initial_state();
     model.player.set_initial_state();
     model.game_config.set_initial_state();
@@ -41,27 +39,17 @@ pub fn set_initial_state(model: &mut Model) {
 
 pub fn retrieve_high_scores(score: &usize) -> Vec<(String, usize)> {
     // TODO: root_pathを渡すようにappを渡してくる...しか無いのかな...
-    let path = Path::new(RESULT_PATH);
-    let display = path.display();
-
-    //パスを指定してファイルを開く
-    let f = match File::open(&path) {
-        Err(why) => panic!(
-            "couldn't open {}: {}",
-            display,
-            why
-        ),
-        Ok(file) => file,
-    };
-
-    let reader = BufReader::new(f);
+    let mut file = File::open(RESULT_PATH).unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
     let mut results: Vec<(String, usize)> = vec![];
     let mut index = 10;
-    for (idx, line) in reader.lines().enumerate() {
-        let res: Vec<String> = line.unwrap().split_whitespace()
+    // 最後が改行のみ行のはずなので、takeで明示的に10行のみ取る。
+    for (idx, line) in contents.split("\n").take(10).enumerate() {
+        let res: Vec<String> = line.split_whitespace()
             .map(|x| x.to_string()).collect();
-        let value = res[1].parse::<usize>().unwrap();
         let key = res[0].clone();
+        let value = res[1].parse::<usize>().unwrap();
         if *score >= value && index == 10 {
             results.push(("no_name".to_string(), *score));
             index = idx;
@@ -72,7 +60,7 @@ pub fn retrieve_high_scores(score: &usize) -> Vec<(String, usize)> {
     results
 }
 
-pub fn save_high_scores(model: &Model) {
+pub fn update_high_scores_and_min_score(model: &mut Model) {
     let mut results: Vec<(String, usize)> = retrieve_high_scores(&model.game_config.score);
     let input_name: String = model.game_config
         .input_field.iter().take(7)
@@ -80,7 +68,14 @@ pub fn save_high_scores(model: &Model) {
         .collect::<Vec<_>>().join("");
     let index = results.iter().position(|x| x.0 == NO_NAME).unwrap();
     results[index].0 = input_name;
-    println!("{:?}", results);
+
+    // min_scoreを更新しておく。
+    model.game_config.min_score = results[9].1;
+
+    let mut file = std::fs::File::create(RESULT_PATH).expect("create failed");
+    for i in results.iter().take(10) {
+        file.write_all(format!("{} {}\n", i.0, i.1).as_bytes()).expect("write failed");
+    }
 }
 
 pub fn handle_input(model: &mut Model, input: Key, max_idx: usize) {
@@ -140,6 +135,7 @@ fn key_to_char(key: Key) -> Option<char> {
         Key::X => Some('X'),
         Key::Y => Some('Y'),
         Key::Z => Some('Z'),
+        Key::Minus => Some('-'),
         Key::Key1 => Some('1'),
         Key::Key2 => Some('2'),
         Key::Key3 => Some('3'),
