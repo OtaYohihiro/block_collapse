@@ -9,7 +9,7 @@ use crate::lib::utils::{
 };
 
 pub fn execute(model: &mut Model, key: Key) {
-    println!("{:?}", key);
+    // println!("{:?}", key);
     match model.win_status {
         WinStatus::Normal => {
             // 隠しコマンド判定
@@ -70,6 +70,7 @@ pub fn execute(model: &mut Model, key: Key) {
             match key {
                 Key::S => {
                     set_initial_state(model);
+                    model.win_status = WinStatus::Normal;
                 },
                 _ => {}
             }

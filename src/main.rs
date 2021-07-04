@@ -9,6 +9,7 @@ use models::player:: Player;
 use models::block::{ Block, MAX_B_NUM };
 use models::win_status::WinStatus;
 use models::game_config::GameConfig;
+use models::ticker::Ticker;
 
 mod lib;
 use lib::{ draw_view, handle_key_pressed, handle_key_released, build_model } ;
@@ -21,6 +22,7 @@ fn main() {
         .run();
 }
 
+// NOTE: これってそういえばなんでattributeにpubつけないで良いんだろう。
 pub struct Model {
     ball: Ball,
     player: Player,
@@ -29,6 +31,7 @@ pub struct Model {
     stream: audio::Stream<Audio>,
     win_status: WinStatus,
     game_config: GameConfig,
+    ticker: Ticker,
 }
 
 pub struct Audio {
@@ -41,11 +44,16 @@ fn model(app: &App) -> Model {
 
 // 1/60sごとに実行される関数。
 fn update(app: &App, model: &mut Model, _update: Update) {
+    let mut c_ticker = model.ticker.clone();
+    c_ticker.notify_observer(model);
     match model.win_status {
         WinStatus::Normal => {
             let mut c_ball = model.ball;
             let reflect_flg = c_ball.reflect(app, &model.player);
-            if reflect_flg { c_ball.reflect_sound(app, model); }
+            if reflect_flg {
+                c_ball.reflect_sound(app, model);
+                model.game_config.reflect_cnt += 1;
+            }
 
             let mut c_blocks = model.blocks.clone();
             let mut index = MAX_B_NUM;
@@ -75,6 +83,7 @@ fn update(app: &App, model: &mut Model, _update: Update) {
         },
         _ => {}
     }
+    model.ticker = c_ticker;
 }
 
 pub fn key_pressed(_app: &App, model: &mut Model, key: Key) {

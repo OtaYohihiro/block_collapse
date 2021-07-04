@@ -13,6 +13,8 @@ use crate::models::block::{ Block, BLOCK_SIZE, LIFE_RNG };
 use crate::models::player::{ Player, Direction, P_Y, P_SIZE };
 use crate::models::game_config::GameConfig;
 use crate::models::win_status::WinStatus;
+use crate::models::achievement::{ Achievement, ACHIEVEMENTS };
+use crate::models::ticker::Ticker;
 use crate::{ key_pressed, key_released, view, audio };
 use crate::lib::utils::{ load_imgs, retrieve_high_scores };
 
@@ -85,9 +87,25 @@ pub fn execute(app: &App) -> Model {
         .build()
         .unwrap();
 
-    // 1000万点以上撮った人がいるとバグる。まぁ...いっかな。
+    // Initialise Ticker
+    let mut ticker = Ticker::new(vec![], 0, 0);
+    // NOTE: newのときにtickerにpushするようにしてるけど、逆にわかりにくいな。やめようかな。 -> やめました。
+    for x in ACHIEVEMENTS.iter() {
+        let a = Achievement::new(
+            x.0,
+            x.1.to_string(),
+            x.2.to_string(),
+            x.3,
+            x.4.to_string(),
+            // &mut ticker
+        );
+        ticker.add_observer(a);
+    };
+
+    // 1000万点以上とった人がいるとバグる。まぁ...いっかな。
     let min_score = retrieve_high_scores(&10_000_000).last().unwrap().1;
     let game_config = GameConfig::new(
+        0,
         0,
         min_score,
         VecDeque::new(),
@@ -103,5 +121,6 @@ pub fn execute(app: &App) -> Model {
         stream,
         win_status: WinStatus::Title,
         game_config,
+        ticker
     }
 }

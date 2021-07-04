@@ -14,6 +14,7 @@ pub const CLEAR_CMD: [Key; 5] = [
 
 pub struct GameConfig {
     pub score: usize,
+    pub reflect_cnt: usize,
     pub min_score: usize,
     pub hidden_cmds: VecDeque<Key>,
     pub confirming: bool, // 確認windowが出ているかどうか。よく出ると思うので、attributeとして持つ。
@@ -24,6 +25,7 @@ pub struct GameConfig {
 impl GameConfig {
     pub fn new(
         score: usize,
+        reflect_cnt: usize,
         min_score: usize,
         hidden_cmds: VecDeque<Key>,
         confirming: bool,
@@ -31,13 +33,14 @@ impl GameConfig {
         input_cursor: usize
     ) -> GameConfig {
         GameConfig {
-            score, min_score, hidden_cmds,
+            score, reflect_cnt, min_score, hidden_cmds,
             confirming, input_field, input_cursor
         }
     }
 
     pub fn set_initial_state(&mut self) {
         self.score = 0;
+        self.reflect_cnt = 0;
         self.confirming = false;
         self.set_initial_input_state();
         // self.confirming = false;
