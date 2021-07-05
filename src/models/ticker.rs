@@ -1,3 +1,5 @@
+use chrono::Local;
+
 use crate::models::achievement::Achievement;
 use crate::Model;
 
@@ -30,11 +32,18 @@ impl Ticker {
         self.observer_list.push(achievement);
     }
 
-    fn remove_observer(&mut self, idx: &usize) {
-        self.observer_list.remove(*idx);
+    // fn remove_observer(&mut self, idx: &usize) {
+    //     self.observer_list.remove(*idx);
+    // }
+    fn update_observer(&mut self, idx: &usize, app_time: f32) {
+        let localtime = Local::now().timestamp();
+        self.observer_list[*idx].achieved_at = localtime;
+        self.observer_list[*idx].achieved_app_time = app_time;
+        self.observer_list[*idx].notified = true;
     }
 
-    pub fn notify_observer(&mut self, model: &Model) {
+
+    pub fn notify_observer(&mut self, model: &Model, app_time: f32) {
         let t_obj = self.state_changed(model);
         let mut updated_observer_idx: Vec<usize> = vec![];
         if t_obj.changed {
@@ -45,7 +54,7 @@ impl Ticker {
             }
 
             for i in updated_observer_idx.iter().rev() {
-                self.remove_observer(i);
+                self.update_observer(i, app_time);
             }
         }
     }

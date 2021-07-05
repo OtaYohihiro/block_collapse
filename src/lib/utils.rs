@@ -4,7 +4,6 @@ use std::fs::File;
 
 use nannou::app::App;
 use nannou::prelude::Key;
-
 use crate::wgpu;
 use crate::Model;
 use crate::models::win_status::WinStatus;
@@ -136,6 +135,7 @@ fn key_to_char(key: Key) -> Option<char> {
         Key::Y => Some('Y'),
         Key::Z => Some('Z'),
         Key::Minus => Some('-'),
+        Key::Space => Some(' '),
         Key::Key1 => Some('1'),
         Key::Key2 => Some('2'),
         Key::Key3 => Some('3'),

@@ -97,6 +97,9 @@ pub fn execute(app: &App) -> Model {
             x.2.to_string(),
             x.3,
             x.4.to_string(),
+            0, // 1970-01-01 0:00:00
+            0.0, // app_timeの初期値
+            false, // 未通知フラグ
             // &mut ticker
         );
         ticker.add_observer(a);

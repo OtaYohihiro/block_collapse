@@ -10,17 +10,17 @@ use nannou::app::DrawScalar;
 
 use crate::Model;
 use crate::models::win_status::WinStatus;
-
 use crate::lib::draw_view_lib::{draw_normal_view, draw_gameover_view};
 
 pub fn execute(app: &App, model: &Model) {
     let draw = app.draw();
+    let app_time = app.time;
     let win = app.window_rect();
 
     match model.win_status {
         WinStatus::Title => draw_title_view(&draw, &win, model),
-        WinStatus::Normal => draw_normal_view::execute(&draw, &win, model),
-        WinStatus::Menu => draw_menu_view(&draw, &win, model),
+        WinStatus::Normal => draw_normal_view::execute(&draw, &win, model, app_time),
+        WinStatus::Menu => draw_menu_view(&draw, &win, model, app_time),
         WinStatus::GameOver => draw_gameover_view::execute(&draw, &win, model),
         WinStatus::RecordBreak => draw_recordbreak_view(app, &draw, &win, model),
     }
@@ -38,8 +38,13 @@ fn draw_title_view(draw: &Draw, _win: &Rect<DrawScalar>, model: &Model) {
         .xy(pt2(0.0, 150.0));
 }
 
-fn draw_menu_view(draw: &Draw, win: &Rect<DrawScalar>, model: &Model) {
-    draw_normal_view::execute(draw, win, model);
+fn draw_menu_view(
+    draw: &Draw,
+    win: &Rect<DrawScalar>,
+    model: &Model,
+    app_time: f32
+) {
+    draw_normal_view::execute(draw, win, model, app_time);
     let padding = 30.0;
     draw.text("Menu screen")
         .xy(pt2(win.left() + padding * 2.0, win.top() - padding));

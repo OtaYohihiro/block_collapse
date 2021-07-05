@@ -45,7 +45,7 @@ fn model(app: &App) -> Model {
 // 1/60sごとに実行される関数。
 fn update(app: &App, model: &mut Model, _update: Update) {
     let mut c_ticker = model.ticker.clone();
-    c_ticker.notify_observer(model);
+    c_ticker.notify_observer(model, app.time);
     match model.win_status {
         WinStatus::Normal => {
             let mut c_ball = model.ball;
