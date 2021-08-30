@@ -2,6 +2,7 @@ use chrono::Local;
 
 use crate::models::achievement::{ Achievement, ACHIEVEMENTS };
 use crate::Model;
+use crate::lib::utils::retrieve_achievements;
 
 pub struct TickerObject {
     pub category: String,
@@ -84,20 +85,26 @@ impl Ticker {
     }
 
     pub fn set_initial_achievements(&mut self) {
-        // NOTE: 達成済みのリストは除外する。
+        // 達成済みのリストは除外する。
+        let achieved = retrieve_achievements();
         for x in ACHIEVEMENTS.iter() {
-            let a = Achievement::new(
-                x.0,
-                x.1.to_string(),
-                x.2.to_string(),
-                x.3,
-                x.4.to_string(),
-                0, // 1970-01-01 0:00:00
-                0.0, // app_timeの初期値
-                false, // 未通知フラグ
-                // &mut ticker
-            );
-            self.add_observer(a);
+            match achieved.iter().find(|&a| *a == x.2.to_string()) {
+                Some(_) => (),
+                None => {
+                    let a = Achievement::new(
+                        x.0,
+                        x.1.to_string(),
+                        x.2.to_string(),
+                        x.3,
+                        x.4.to_string(),
+                        0, // 1970-01-01 0:00:00
+                        0.0, // app_timeの初期値
+                        false, // 未通知フラグ
+                        // &mut ticker
+                    );
+                    self.add_observer(a);
+                },
+            }
         };
     }
 }

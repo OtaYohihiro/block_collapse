@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::io::{ Write, Read };
-use std::fs::File;
+use std::fs::{File, copy};
+use std::fs::OpenOptions;
+use std::path::Path;
 
 use nannou::app::App;
 use nannou::prelude::Key;
@@ -43,6 +45,10 @@ pub fn set_initial_state(model: &mut Model) {
 // 後はcacheデータから呼ぶみたいにしないとエコでなさそう。
 // まぁ動いているから一旦おいておこう。
 pub fn retrieve_high_scores(score: &usize) -> Vec<(String, usize)> {
+   if !Path::new(RESULT_PATH).exists() {
+        copy("result_example.txt", RESULT_PATH).expect("file copy failed");
+    }
+
     // TODO: root_pathを渡すようにappを渡してくる...しか無いのかな...
     // NOTE: https://qiita.com/fujitayy/items/12a80560a356607da637
     // これ読むと、性能悪い感じで処理しているのかもしれない。
@@ -63,6 +69,28 @@ pub fn retrieve_high_scores(score: &usize) -> Vec<(String, usize)> {
             index = idx;
         }
         results.push((key, value));
+    }
+
+    results
+}
+
+pub fn retrieve_achievements() -> Vec<String> {
+    if !Path::new(ACHIEVEMENT_PATH).exists() {
+        File::create(ACHIEVEMENT_PATH).expect("file create failed");
+    }
+
+    let mut file = File::open(ACHIEVEMENT_PATH).unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
+    let mut results: Vec<String> = vec![];
+    if contents.len() == 0 { return results }
+
+    for line in contents.split("\n") {
+        // rarity, title, achieved_at
+        let res: Vec<String> = line.split_whitespace()
+            .map(|x| x.to_string()).collect();
+        // 最終行が改行のみなので
+        if res.len() > 0 { results.push(res[1].clone()); }
     }
 
     results
@@ -119,8 +147,8 @@ pub fn handle_input(model: &mut Model, input: Key, max_idx: usize) {
 }
 
 fn save_achievements(model: &Model) {
-    println!("save_achievements triggered.");
-    let mut file = File::create(ACHIEVEMENT_PATH).expect("create failed");
+    let mut file = OpenOptions::new().append(true)
+        .open(ACHIEVEMENT_PATH).expect("create failed");
     for i in model.ticker.observer_list.iter().filter(|o| o.notified) {
         file.write_all(format!("{} {} {}\n", i.rarity, i.title, i.achieved_at)
             .as_bytes())
