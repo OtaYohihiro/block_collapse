@@ -1,3 +1,5 @@
+TEST___ 180210
+OTA_ 180210
 UDA____ 90280
 UDA____ 40060
 YOKAN__ 10020
@@ -6,5 +8,3 @@ adam 10000
 bolis 9000
 cathy 8000
 doloria 7000
-elizabeth 6000
-felis 5000
