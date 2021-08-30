@@ -88,7 +88,6 @@ pub fn execute(model: &mut Model, key: Key) {
                     }
                     _ => {}
                 }
-
             } else {
                 match key {
                     Key::Return => {

@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::models::ticker::TickerObject;
 
 #[derive(Clone, Copy)]
@@ -6,6 +8,17 @@ pub enum Rarity {
     Gold,
     Silver,
     Bronze
+}
+
+impl fmt::Display for Rarity {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Rarity::Pratinum => write!(f, "pratinum"),
+            Rarity::Gold => write!(f, "gold"),
+            Rarity::Silver => write!(f, "silver"),
+            Rarity::Bronze => write!(f, "bronze"),
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -21,14 +34,14 @@ pub struct Achievement {
 }
 
 pub const ACHIEVEMENTS: [(usize, &str, &str, Rarity, &str); 8]= [
-    (10, "reflect_cnt", "reflect beginner", Rarity::Bronze, ""),
-    (50, "reflect_cnt", "reflect intermediate", Rarity::Silver, ""),
-    (100, "reflect_cnt", "reflect expert", Rarity::Gold, ""),
-    (500, "reflect_cnt", "reflect master", Rarity::Pratinum, ""),
-    (50_000, "score", "block beginner", Rarity::Bronze, ""),
-    (100_000, "score", "block intermediate", Rarity::Silver, ""),
-    (500_000, "score", "block expert", Rarity::Gold, ""),
-    (1_000_000, "score", "block master", Rarity::Pratinum, ""),
+    (10, "reflect_cnt", "reflect-beginner", Rarity::Bronze, ""),
+    (50, "reflect_cnt", "reflect-intermediate", Rarity::Silver, ""),
+    (100, "reflect_cnt", "reflect-expert", Rarity::Gold, ""),
+    (500, "reflect_cnt", "reflect-master", Rarity::Pratinum, ""),
+    (50_000, "score", "block-beginner", Rarity::Bronze, ""),
+    (100_000, "score", "block-intermediate", Rarity::Silver, ""),
+    (500_000, "score", "block-expert", Rarity::Gold, ""),
+    (1_000_000, "score", "block-master", Rarity::Pratinum, ""),
 ];
 
 impl Achievement {
@@ -51,9 +64,9 @@ impl Achievement {
         // ticker.add_observer(achievement);
     }
 
-    pub fn update(&self, t_ojt: &TickerObject) -> bool {
-        if self.category == t_ojt.category
-            && t_ojt.value >= self.limit && !self.notified {
+    pub fn update(&self, t_obj: &TickerObject) -> bool {
+        if self.category == t_obj.category
+            && t_obj.value >= self.limit && !self.notified {
             let rarity: &str = match self.rarity {
                 Rarity::Pratinum => "premium",
                 Rarity::Gold => "gold",

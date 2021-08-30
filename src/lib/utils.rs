@@ -9,6 +9,7 @@ use crate::Model;
 use crate::models::win_status::WinStatus;
 
 const RESULT_PATH: &str = "/Users/ota/project/rust/block_collapse/result.txt";
+const ACHIEVEMENT_PATH: &str = "/Users/ota/project/rust/block_collapse/achievement.txt";
 pub const NO_NAME: &str = "no_name";
 
 fn load_img(app: &App, file_name: &str) -> wgpu::Texture {
@@ -34,10 +35,17 @@ pub fn set_initial_state(model: &mut Model) {
     model.ball.set_initial_state();
     model.player.set_initial_state();
     model.game_config.set_initial_state();
+    save_achievements(model);
 }
 
+// TODO: Log見て気づいたが、これgameover画面で、1/60で呼び出されている。
+// file readをその頻度で呼ぶのはおそらく大分良くないから、初回だけ読んで、
+// 後はcacheデータから呼ぶみたいにしないとエコでなさそう。
+// まぁ動いているから一旦おいておこう。
 pub fn retrieve_high_scores(score: &usize) -> Vec<(String, usize)> {
     // TODO: root_pathを渡すようにappを渡してくる...しか無いのかな...
+    // NOTE: https://qiita.com/fujitayy/items/12a80560a356607da637
+    // これ読むと、性能悪い感じで処理しているのかもしれない。
     let mut file = File::open(RESULT_PATH).unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
@@ -47,8 +55,9 @@ pub fn retrieve_high_scores(score: &usize) -> Vec<(String, usize)> {
     for (idx, line) in contents.split("\n").take(10).enumerate() {
         let res: Vec<String> = line.split_whitespace()
             .map(|x| x.to_string()).collect();
-        let key = res[0].clone();
-        let value = res[1].parse::<usize>().unwrap();
+        let size = res.len();
+        let key = res[0..(size - 1)].join(" ");
+        let value = res[size - 1].parse::<usize>().expect("not a number");
         if *score >= value && index == 10 {
             results.push(("no_name".to_string(), *score));
             index = idx;
@@ -60,7 +69,8 @@ pub fn retrieve_high_scores(score: &usize) -> Vec<(String, usize)> {
 }
 
 pub fn update_high_scores_and_min_score(model: &mut Model) {
-    let mut results: Vec<(String, usize)> = retrieve_high_scores(&model.game_config.score);
+    let mut results: Vec<(String, usize)> = retrieve_high_scores(
+        &model.game_config.score);
     let input_name: String = model.game_config
         .input_field.iter().take(7)
         .map(|x| x.to_string())
@@ -71,9 +81,11 @@ pub fn update_high_scores_and_min_score(model: &mut Model) {
     // min_scoreを更新しておく。
     model.game_config.min_score = results[9].1;
 
-    let mut file = std::fs::File::create(RESULT_PATH).expect("create failed");
+    let mut file = File::create(RESULT_PATH).expect("create failed");
     for i in results.iter().take(10) {
-        file.write_all(format!("{} {}\n", i.0, i.1).as_bytes()).expect("write failed");
+        file.write_all(format!("{} {}\n", i.0, i.1)
+            .as_bytes())
+            .expect("write failed");
     }
 }
 
@@ -104,6 +116,17 @@ pub fn handle_input(model: &mut Model, input: Key, max_idx: usize) {
 
     model.game_config.input_field = c_input_field;
     model.game_config.input_cursor = c_input_cursor;
+}
+
+fn save_achievements(model: &Model) {
+    println!("save_achievements triggered.");
+    let mut file = File::create(ACHIEVEMENT_PATH).expect("create failed");
+    for i in model.ticker.observer_list.iter().filter(|o| o.notified) {
+        file.write_all(format!("{} {} {}\n", i.rarity, i.title, i.achieved_at)
+            .as_bytes())
+            .expect("write failed");
+    }
+
 }
 
 fn key_to_char(key: Key) -> Option<char> {

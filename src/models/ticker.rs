@@ -1,6 +1,6 @@
 use chrono::Local;
 
-use crate::models::achievement::Achievement;
+use crate::models::achievement::{ Achievement, ACHIEVEMENTS };
 use crate::Model;
 
 pub struct TickerObject {
@@ -24,8 +24,12 @@ pub struct Ticker {
 
 
 impl Ticker {
-    pub fn new(observer_list: Vec<Achievement>, c_score: usize, c_reflect_cnt: usize) -> Ticker {
-        Ticker {observer_list, c_score, c_reflect_cnt }
+    pub fn new(
+        observer_list: Vec<Achievement>,
+        c_score: usize,
+        c_reflect_cnt: usize
+    ) -> Ticker {
+        Ticker { observer_list, c_score, c_reflect_cnt }
     }
 
     pub fn add_observer(&mut self, achievement: Achievement) {
@@ -41,7 +45,6 @@ impl Ticker {
         self.observer_list[*idx].achieved_app_time = app_time;
         self.observer_list[*idx].notified = true;
     }
-
 
     pub fn notify_observer(&mut self, model: &Model, app_time: f32) {
         let t_obj = self.state_changed(model);
@@ -78,5 +81,23 @@ impl Ticker {
         }
 
         return TickerObject::new("".to_string(), 0, false)
+    }
+
+    pub fn set_initial_achievements(&mut self) {
+        // NOTE: 達成済みのリストは除外する。
+        for x in ACHIEVEMENTS.iter() {
+            let a = Achievement::new(
+                x.0,
+                x.1.to_string(),
+                x.2.to_string(),
+                x.3,
+                x.4.to_string(),
+                0, // 1970-01-01 0:00:00
+                0.0, // app_timeの初期値
+                false, // 未通知フラグ
+                // &mut ticker
+            );
+            self.add_observer(a);
+        };
     }
 }
