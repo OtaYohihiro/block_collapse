@@ -19,7 +19,8 @@ pub struct GameConfig {
     pub hidden_cmds: VecDeque<Key>,
     pub confirming: bool, // 確認windowが出ているかどうか。よく出ると思うので、attributeとして持つ。
     pub input_field: Vec<char>,
-    pub input_cursor: usize // そんな文字はいらないけども、index操作することが多い関係で、usizeのほうが良い。
+    pub input_cursor: usize, // そんな文字はいらないけども、index操作することが多い関係で、usizeのほうが良い。
+    pub stage: usize,
 }
 
 impl GameConfig {
@@ -30,11 +31,12 @@ impl GameConfig {
         hidden_cmds: VecDeque<Key>,
         confirming: bool,
         input_field: Vec<char>,
-        input_cursor: usize
+        input_cursor: usize,
+        stage: usize,
     ) -> GameConfig {
         GameConfig {
             score, reflect_cnt, min_score, hidden_cmds,
-            confirming, input_field, input_cursor
+            confirming, input_field, input_cursor, stage
         }
     }
 
@@ -43,7 +45,7 @@ impl GameConfig {
         self.reflect_cnt = 0;
         self.confirming = false;
         self.set_initial_input_state();
-        // self.confirming = false;
+        self.stage = 1;
     }
 
     pub fn set_initial_input_state(&mut self) {

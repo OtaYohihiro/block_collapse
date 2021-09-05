@@ -1,6 +1,4 @@
 use std::collections::{ VecDeque, HashMap };
-use rand::thread_rng;
-use rand::prelude::SliceRandom;
 
 use nannou::app::App;
 use nannou::wgpu;
@@ -9,13 +7,14 @@ use nannou::geom::point::pt2;
 
 use crate::{ Model, Audio };
 use crate::models::ball::{ Ball, BallStatus, INIT_X, INIT_Y, INIT_R };
-use crate::models::block::{ Block, BLOCK_SIZE, LIFE_RNG };
+use crate::models::block::Block;
 use crate::models::player::{ Player, Direction, P_Y, P_SIZE };
 use crate::models::game_config::GameConfig;
 use crate::models::win_status::WinStatus;
 use crate::models::ticker::Ticker;
 use crate::{ key_pressed, key_released, view, audio };
-use crate::lib::utils::{ load_imgs, retrieve_high_scores };
+use crate::lib::create_blocks;
+use crate::lib::utils::{ load_imgs, retrieve_high_scores};
 
 
 pub fn execute(app: &App) -> Model {
@@ -40,21 +39,8 @@ pub fn execute(app: &App) -> Model {
         Direction::Front,
     );
 
-    let mut blocks: Vec<Block> = vec![];
     let win = app.window_rect();
-    let padding = 30.0;
-    let mut rng = thread_rng();
-    for i in 0..36 {
-        let b = Block::new(
-            vec2(
-                win.left() + padding + i as f32 * 30.0,
-                win.top() - padding * 2.0 - (i % 3) as f32 * 30.0,
-            ),
-            BLOCK_SIZE,
-            *LIFE_RNG.choose(&mut rng).unwrap()
-        );
-        blocks.push(b)
-    }
+    let blocks: Vec<Block> = create_blocks::execute(1, &win);
 
     // Initialize textures.
     let mut textures = HashMap::new();
@@ -99,7 +85,8 @@ pub fn execute(app: &App) -> Model {
         VecDeque::new(),
         false,
         vec!['_', '_', '_', '_', '_', '_', '_', '_', '_', '_'],
-        0
+        0,
+        1
     );
     Model {
         ball,

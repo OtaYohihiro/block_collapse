@@ -1,14 +1,19 @@
 use nannou::prelude::Key;
+use nannou::app::App;
 
 use crate::Model;
 use crate::models::win_status::WinStatus;
 use crate::models::player::Direction;
 use crate::models::game_config::{ SPEED_UP_CMD, SPEED_DOWN_CMD, CLEAR_CMD };
 use crate::lib::utils::{
-    set_initial_state, update_high_scores_and_min_score, handle_input
+    set_initial_state,
+    update_high_scores_and_min_score,
+    handle_input,
+    load_stage
 };
 
-pub fn execute(model: &mut Model, key: Key) {
+pub fn execute(model: &mut Model, key: Key, app: &App) {
+    let win = app.window_rect();
     // println!("{:?}", key);
     match model.win_status {
         WinStatus::Normal => {
@@ -51,6 +56,8 @@ pub fn execute(model: &mut Model, key: Key) {
                     println!("X pressed!!");
                     model.win_status = WinStatus::Normal;
                 },
+                Key::Key1 => {load_stage(model, 1, &win)},
+                Key::Key2 => {load_stage(model, 2, &win)},
                 _ => {}
             }
         },

@@ -86,8 +86,8 @@ fn update(app: &App, model: &mut Model, _update: Update) {
     model.ticker = c_ticker;
 }
 
-pub fn key_pressed(_app: &App, model: &mut Model, key: Key) {
-    handle_key_pressed::execute(model, key);
+pub fn key_pressed(app: &App, model: &mut Model, key: Key) {
+    handle_key_pressed::execute(model, key, app);
 }
 
 pub fn key_released(_app: &App, model: &mut Model, key: Key) {

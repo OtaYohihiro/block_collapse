@@ -9,7 +9,6 @@ use crate::Model;
 
 pub const BLOCK_SIZE: f32 = 15.0;
 pub const MAX_B_NUM: u16 = 1000;
-pub const LIFE_RNG: [u8; 3] = [1, 2, 3];
 const CONTACT_DURATION: f32 = 0.15; // frameかと思いきや、秒数だった。
 
 #[derive(Clone)]

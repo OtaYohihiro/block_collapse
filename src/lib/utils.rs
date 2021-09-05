@@ -6,13 +6,20 @@ use std::path::Path;
 
 use nannou::app::App;
 use nannou::prelude::Key;
+use nannou::geom::rect::Rect;
+use nannou::app::DrawScalar;
+
 use crate::wgpu;
 use crate::Model;
 use crate::models::win_status::WinStatus;
+use crate::lib::create_blocks;
 
 const RESULT_PATH: &str = "/Users/ota/project/rust/block_collapse/result.txt";
 const ACHIEVEMENT_PATH: &str = "/Users/ota/project/rust/block_collapse/achievement.txt";
 pub const NO_NAME: &str = "no_name";
+
+// TODO: 引数に&mut modelをとっているような関数用に
+// wrappedModel作って、それのメソッドとして定義したい。
 
 fn load_img(app: &App, file_name: &str) -> wgpu::Texture {
     let assets = app.assets_path().unwrap();
@@ -199,4 +206,10 @@ fn key_to_char(key: Key) -> Option<char> {
         Key::Key0 => Some('0'),
         _ => None,
     }
+}
+
+pub fn load_stage(model: &mut Model, stage: usize, win: &Rect<DrawScalar>) {
+    model.blocks = create_blocks::execute(stage, win);
+    model.game_config.stage = stage;
+    println!("stage {} loaded...", stage);
 }
