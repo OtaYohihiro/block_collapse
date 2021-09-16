@@ -1,3 +1,4 @@
+
 use nannou::app::App;
 use nannou::color::*;
 use nannou::prelude::rgb::Rgb;
@@ -5,7 +6,7 @@ use nannou::color::encoding::Srgb;
 use nannou::geom::vector::Vector2;
 
 use crate::models::ball::Ball;
-use crate::Model;
+use crate::models::concerns::reflect::ReflectLogic;
 
 pub const BLOCK_SIZE: f32 = 15.0;
 pub const MAX_B_NUM: u16 = 1000;
@@ -18,7 +19,7 @@ pub struct Block {
     pub life: u8, // ブロックの強度
 }
 
-impl Block {
+impl Block{
     pub fn new(p: Vector2, r: f32, life: u8) -> Block {
         Block{p, r, life}
     }
@@ -32,9 +33,13 @@ impl Block {
         }
     }
 
-    pub fn reflect(&mut self, app: &App, ball: &mut Ball) -> bool {
+    fn life_minus(&mut self) {
+        self.life -= 1;
+    }
+
+   pub fn reflect(&mut self, app: &App, ball: &mut Ball) -> bool {
         // ballとの当たり判定
-        //// ballとplayerの距離
+        //// ballとblockの距離
         let dist = (
             (self.p[0] - ball.p[0]).powf(2.0) +
                 (self.p[1] - ball.p[1]).powf(2.0)
@@ -52,21 +57,6 @@ impl Block {
 
         return false
     }
-
-    pub fn reflect_sound(&self, app: &App, model: &mut Model) {
-        model.game_config.score += 10000;
-
-        let assets = app.assets_path().unwrap();
-        let path = assets.join("sounds").join("反射音.wav");
-        let sound = audrey::open(path).expect("failed to load sound");
-        model.stream
-            .send(move |audio| { audio.sounds.push(sound) })
-            .ok();
-    }
-
-
-    fn life_minus(&mut self) {
-        self.life -= 1;
-    }
 }
 
+impl ReflectLogic for Block {}

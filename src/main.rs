@@ -10,6 +10,9 @@ use models::block::{ Block, MAX_B_NUM };
 use models::win_status::WinStatus;
 use models::game_config::GameConfig;
 use models::ticker::Ticker;
+// https://diary.kitaitimakoto.net/2018/02/20.html
+// まじで迷った。
+use models::concerns::reflect::ReflectLogic;
 
 mod lib;
 use lib::{ draw_view, handle_key_pressed, handle_key_released, build_model } ;
