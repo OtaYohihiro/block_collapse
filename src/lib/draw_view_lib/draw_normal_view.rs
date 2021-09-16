@@ -39,21 +39,24 @@ pub fn execute(
 }
 
 fn draw_player(draw: &Draw, model: &Model) {
+    let x = model.player.p.x;
+    let y = model.player.p.y;
+    let size = model.player.r;
     match model.player.dir {
         Direction::Left => {
             draw.texture(
                 model.textures.get("player").unwrap().get("l_run").unwrap()
-            ).xy(model.player.xy).wh(model.player.wh);
+            ).xy(pt2(x, y)).wh(vec2(size, size));
         },
         Direction::Right => {
             draw.texture(
                 model.textures.get("player").unwrap().get("r_run").unwrap()
-            ).xy(model.player.xy).wh(model.player.wh);
+            ).xy(pt2(x, y)).wh(vec2(size, size));
         },
         _ => {
             draw.texture(
                 model.textures.get("player").unwrap().get("normal").unwrap()
-            ).xy(model.player.xy).wh(model.player.wh);
+            ).xy(pt2(x, y)).wh(vec2(size, size));
         }
     }
 }

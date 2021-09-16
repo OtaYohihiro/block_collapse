@@ -59,6 +59,7 @@ fn update(app: &App, model: &mut Model, _update: Update) {
             let mut index = MAX_B_NUM;
             for (idx, block) in c_blocks.iter_mut().enumerate() {
                 if block.reflect(app, &mut c_ball) {
+                    model.game_config.score += 10;
                     block.reflect_sound(app, model);
                     if block.life == 0 { index = idx as u16 }
                     break;

@@ -3,12 +3,11 @@ use std::collections::{ VecDeque, HashMap };
 use nannou::app::App;
 use nannou::wgpu;
 use nannou::geom::vector::vec2;
-use nannou::geom::point::pt2;
 
 use crate::{ Model, Audio };
 use crate::models::ball::{ Ball, BallStatus, INIT_X, INIT_Y, INIT_R };
 use crate::models::block::Block;
-use crate::models::player::{ Player, Direction, P_Y, P_SIZE };
+use crate::models::player::{ Player, Direction, P_Y, P_SIZE, PACE };
 use crate::models::game_config::GameConfig;
 use crate::models::win_status::WinStatus;
 use crate::models::ticker::Ticker;
@@ -34,8 +33,9 @@ pub fn execute(app: &App) -> Model {
         BallStatus::Normal,
     );
     let player = Player::new(
-        pt2(0.0, P_Y),
-        vec2(P_SIZE, P_SIZE),
+        vec2(0.0, P_Y),
+        PACE,
+        P_SIZE,
         Direction::Front,
     );
 

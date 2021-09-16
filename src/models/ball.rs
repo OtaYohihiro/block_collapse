@@ -69,11 +69,11 @@ impl Ball {
         // playerとの当たり判定
         //// ballとplayerの距離
         let dist = (
-            (self.p[0] - player.xy[0]).powf(2.0) +
-                (self.p[1] - player.xy[1]).powf(2.0)
+            (self.p[0] - player.p[0]).powf(2.0) +
+                (self.p[1] - player.p[1]).powf(2.0)
         ).powf(0.5);
         //// 半径同士のsum
-        let r_sum = self.r + player.wh[0];
+        let r_sum = self.r + player.r;
         let duration = app.time - self.latest_contact_at;
 
         // NOTE: 接触判定ちょい甘いが一旦. playerの範囲が微妙だな。
@@ -86,8 +86,8 @@ impl Ball {
         return false
     }
 
-    pub fn reflect_sound(self, app: &App, model: &mut Model) {
-        model.game_config.score += 10;
+    pub fn reflect_sound(&self, app: &App, model: &mut Model) {
+        // model.game_config.score += 10;
 
         let assets = app.assets_path().unwrap();
         let path = assets.join("sounds").join("反射音.wav");
