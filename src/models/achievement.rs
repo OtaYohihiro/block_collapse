@@ -47,10 +47,10 @@ pub const ACHIEVEMENTS: [(usize, &str, &str, Rarity, &str); 8]= [
 impl Achievement {
     pub fn new(
       limit: usize,
-      category: String,
-      title: String,
+      category: impl Into<String>,
+      title: impl Into<String>,
       rarity: Rarity,
-      description: String,
+      description: impl Into<String>,
       achieved_at: i64,
       achieved_app_time: f32,
       notified: bool,
@@ -58,8 +58,14 @@ impl Achievement {
     ) -> Achievement
     {
         Achievement {
-          limit, category, title, rarity, description, achieved_at,
-          achieved_app_time, notified
+            limit,
+            category: category.into(),
+            title: title.into(),
+            rarity,
+            description: description.into(),
+            achieved_at,
+            achieved_app_time,
+            notified
         }
         // ticker.add_observer(achievement);
     }

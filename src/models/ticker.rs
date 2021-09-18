@@ -11,8 +11,8 @@ pub struct TickerObject {
 }
 
 impl TickerObject {
-    pub fn new(category: String, value: usize, changed: bool) -> TickerObject {
-        TickerObject { category, value, changed}
+    pub fn new(category: impl Into<String>, value: usize, changed: bool) -> TickerObject {
+        TickerObject { category: category.into(), value, changed}
     }
 }
 
@@ -67,7 +67,7 @@ impl Ticker {
         if self.c_score != model.game_config.score {
             self.c_score = model.game_config.score;
             return TickerObject::new(
-                "score".to_string(),
+                "score",
                 model.game_config.score,
                 true
             )
@@ -75,13 +75,13 @@ impl Ticker {
         if self.c_reflect_cnt != model.game_config.reflect_cnt {
             self.c_reflect_cnt = model.game_config.reflect_cnt;
             return TickerObject::new(
-                "reflect_cnt".to_string(),
+                "reflect_cnt",
                 model.game_config.reflect_cnt,
                 true
             )
         }
 
-        return TickerObject::new("".to_string(), 0, false)
+        return TickerObject::new("", 0, false)
     }
 
     pub fn set_initial_achievements(&mut self) {
@@ -93,10 +93,10 @@ impl Ticker {
                 None => {
                     let a = Achievement::new(
                         x.0,
-                        x.1.to_string(),
-                        x.2.to_string(),
+                        x.1,
+                        x.2,
                         x.3,
-                        x.4.to_string(),
+                        x.4,
                         0, // 1970-01-01 0:00:00
                         0.0, // app_timeの初期値
                         false, // 未通知フラグ
