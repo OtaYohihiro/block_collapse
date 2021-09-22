@@ -8,6 +8,10 @@ use nannou::app::App;
 use nannou::prelude::Key;
 use nannou::geom::rect::Rect;
 use nannou::app::DrawScalar;
+use nannou::ui::prelude::color::Color;
+use nannou::ui::color;
+
+use nannou::color::{Alpha, Rgb, rgba};
 
 use crate::wgpu;
 use crate::Model;
@@ -212,4 +216,15 @@ pub fn load_stage(model: &mut Model, stage: usize, win: &Rect<DrawScalar>) {
     model.blocks = create_blocks::execute(stage, win);
     model.game_config.stage = stage;
     println!("stage {} loaded...", stage);
+}
+
+// nannou::ui::prelude::color::Color::Rgbaから、
+// 素のRgbaを導出するための関数
+pub fn to_rgba(c: Color) -> Alpha<Rgb<f32>, f32> {
+    if let Color::Rgba(r, g, b, a) = c {
+        rgba(r, g, b, a)
+    } else {
+        let color::Rgba(r, g, b, a) = c.to_rgb();
+        rgba(r, g, b, a)
+    }
 }

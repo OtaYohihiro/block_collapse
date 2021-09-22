@@ -10,12 +10,13 @@ use nannou::app::DrawScalar;
 
 use crate::Model;
 use crate::models::win_status::WinStatus;
-use crate::lib::draw_view_lib::{draw_normal_view, draw_gameover_view};
+use crate::lib::draw_view_lib::{draw_normal_view, draw_gameover_view, draw_effect_view};
 
 pub fn execute(app: &App, model: &Model) {
     let draw = app.draw();
     let app_time = app.time;
     let win = app.window_rect();
+    draw_effect_view::execute(&draw, &win, model);
 
     match model.win_status {
         WinStatus::Title => draw_title_view(&draw, &win, model),

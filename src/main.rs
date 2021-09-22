@@ -1,21 +1,32 @@
+use std::collections::HashMap;
+
 use nannou::prelude::*;
+use nannou::ui::color::{WHITE, TRANSPARENT};
+
 use nannou_audio as audio;
 use nannou_audio::Buffer;
-use std::collections::HashMap;
 
 mod models;
 use models::ball::{ Ball, BallStatus };
-use models::player:: Player;
 use models::block::{ Block, MAX_B_NUM };
-use models::win_status::WinStatus;
+use models::effect::{ Effect, Object };
 use models::game_config::GameConfig;
+use models::player:: Player;
+use models::win_status::WinStatus;
 use models::ticker::Ticker;
 // https://diary.kitaitimakoto.net/2018/02/20.html
 // まじで迷った。
 use models::concerns::reflect::ReflectLogic;
 
 mod lib;
-use lib::{ draw_view, handle_key_pressed, handle_key_released, build_model } ;
+use lib::{
+    draw_view,
+    handle_key_pressed,
+    handle_key_released,
+    build_model,
+} ;
+use lib::utils::to_rgba;
+use lib::utils_for_effect::{ add_effect, update_effect };
 
 fn main() {
     nannou::app(model)
@@ -34,6 +45,7 @@ pub struct Model {
     stream: audio::Stream<Audio>,
     win_status: WinStatus,
     game_config: GameConfig,
+    effect_vec: Vec<Effect>,
     ticker: Ticker,
 }
 
@@ -49,12 +61,24 @@ fn model(app: &App) -> Model {
 fn update(app: &App, model: &mut Model, _update: Update) {
     let mut c_ticker = model.ticker.clone();
     c_ticker.notify_observer(model, app.time);
+    update_effect(model);
     match model.win_status {
         WinStatus::Normal => {
             let mut c_ball = model.ball;
             let reflect_flg = c_ball.reflect(app, &model.player);
             if reflect_flg {
                 c_ball.reflect_sound(app, model);
+
+                let effect = Effect::new(
+                    2.0,
+                    Object::Ball,
+                    c_ball.p.clone(),
+                    vec2(0.0, 0.0),
+                    (to_rgba(WHITE), to_rgba(TRANSPARENT)),
+                    vec![("shape_effect", "fadeout"), ("color_effect", "fadeout"),("shape", "cross")]
+                );
+                add_effect(model, effect);
+
                 model.game_config.reflect_cnt += 1;
             }
 

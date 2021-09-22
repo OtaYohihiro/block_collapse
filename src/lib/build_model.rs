@@ -7,10 +7,11 @@ use nannou::geom::vector::vec2;
 use crate::{ Model, Audio };
 use crate::models::ball::{ Ball, BallStatus, INIT_X, INIT_Y, INIT_R };
 use crate::models::block::Block;
-use crate::models::player::{ Player, Direction, P_Y, P_SIZE, PACE };
+use crate::models::effect::Effect;
 use crate::models::game_config::GameConfig;
-use crate::models::win_status::WinStatus;
+use crate::models::player::{ Player, Direction, P_Y, P_SIZE, PACE };
 use crate::models::ticker::Ticker;
+use crate::models::win_status::WinStatus;
 use crate::{ key_pressed, key_released, view, audio };
 use crate::lib::create_blocks;
 use crate::lib::utils::{ load_imgs, retrieve_high_scores};
@@ -88,6 +89,10 @@ pub fn execute(app: &App) -> Model {
         0,
         1
     );
+
+    // Effectを格納するvector
+    let effect_vec: Vec<Effect> = vec![];
+
     Model {
         ball,
         player,
@@ -96,6 +101,7 @@ pub fn execute(app: &App) -> Model {
         stream,
         win_status: WinStatus::Title,
         game_config,
-        ticker
+        ticker,
+        effect_vec,
     }
 }
