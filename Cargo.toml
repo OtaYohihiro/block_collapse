@@ -12,4 +12,5 @@ nannou_audio = "0.16.0"
 audrey = "0.3"
 rand = "0.8.4"
 chrono = "0.4.19"
+# https://zenn.dev/frozenlib/articles/lazy_static_to_once_cell
 once_cell = "1.8.0"

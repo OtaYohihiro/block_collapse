@@ -14,14 +14,13 @@ use crate::lib::draw_view_lib::{draw_normal_view, draw_gameover_view, draw_effec
 
 pub fn execute(app: &App, model: &Model) {
     let draw = app.draw();
-    let app_time = app.time;
     let win = app.window_rect();
     draw_effect_view::execute(&draw, &win, model);
 
     match model.win_status {
         WinStatus::Title => draw_title_view(&draw, &win, model),
-        WinStatus::Normal => draw_normal_view::execute(&draw, &win, model, app_time),
-        WinStatus::Menu => draw_menu_view(&draw, &win, model, app_time),
+        WinStatus::Normal => draw_normal_view::execute(&draw, &win, model),
+        WinStatus::Menu => draw_menu_view(&draw, &win, model),
         WinStatus::GameOver => draw_gameover_view::execute(&draw, &win, model),
         WinStatus::RecordBreak => draw_recordbreak_view(app, &draw, &win, model),
     }
@@ -43,9 +42,8 @@ fn draw_menu_view(
     draw: &Draw,
     win: &Rect<DrawScalar>,
     model: &Model,
-    app_time: f32
 ) {
-    draw_normal_view::execute(draw, win, model, app_time);
+    draw_normal_view::execute(draw, win, model);
     let padding = 30.0;
     draw.text("Menu screen")
         .xy(pt2(win.left() + padding * 2.0, win.top() - padding));

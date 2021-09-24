@@ -61,11 +61,11 @@ impl Effect {
         }
     }
 
-    pub fn shape_effect(&self) -> &String {
+    pub fn shape_effect(&self) -> &str {
         self.options.get("shape_effect").unwrap()
     }
 
-    pub fn shape(&self) -> &String {
+    pub fn shape(&self) -> &str {
         self.options.get("shape").unwrap()
     }
 

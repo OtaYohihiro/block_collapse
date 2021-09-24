@@ -60,7 +60,7 @@ fn model(app: &App) -> Model {
 // 1/60sごとに実行される関数。
 fn update(app: &App, model: &mut Model, _update: Update) {
     let mut c_ticker = model.ticker.clone();
-    c_ticker.notify_observer(model, app.time);
+    c_ticker.notify_observer(model, &app.window_rect());
     update_effect(model);
     match model.win_status {
         WinStatus::Normal => {
@@ -70,7 +70,7 @@ fn update(app: &App, model: &mut Model, _update: Update) {
                 c_ball.reflect_sound(app, model);
 
                 let effect = Effect::new(
-                    2.0,
+                    1.0,
                     Object::Ball,
                     c_ball.p.clone(),
                     vec2(0.0, 0.0),

@@ -29,7 +29,6 @@ pub struct Achievement {
     pub rarity: Rarity,
     pub description: String,
     pub achieved_at: i64, // unixtimeで保存する
-    pub achieved_app_time: f32,
     pub notified: bool,
 }
 
@@ -52,7 +51,6 @@ impl Achievement {
       rarity: Rarity,
       description: impl Into<String>,
       achieved_at: i64,
-      achieved_app_time: f32,
       notified: bool,
       // ticker: &mut Ticker,
     ) -> Achievement
@@ -64,7 +62,6 @@ impl Achievement {
             rarity,
             description: description.into(),
             achieved_at,
-            achieved_app_time,
             notified
         }
         // ticker.add_observer(achievement);
@@ -73,21 +70,14 @@ impl Achievement {
     pub fn update(&self, t_obj: &TickerObject) -> bool {
         if self.category == t_obj.category
             && t_obj.value >= self.limit && !self.notified {
-            let rarity: &str = match self.rarity {
-                Rarity::Pratinum => "premium",
-                Rarity::Gold => "gold",
-                Rarity::Silver => "silver",
-                Rarity::Bronze => "bronze",
-            };
-            println!(
-                "{} {} {} // ACHIEVED!!",
-                rarity,
-                self.title,
-                self.description
-            );
+            println!("{}", self.notify_msg());
             return true
         }
 
         return false
+    }
+
+    pub fn notify_msg(&self) -> String {
+        return format!("{} {} achieved!!", self.rarity, self.title)
     }
 }

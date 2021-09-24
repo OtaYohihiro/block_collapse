@@ -1,8 +1,17 @@
 use chrono::Local;
 
+use nannou::geom::point::pt2;
+use nannou::geom::vector::vec2;
+use nannou::geom::rect::Rect;
+use nannou::app::DrawScalar;
+use nannou::ui::color::WHITE;
+
 use crate::models::achievement::{ Achievement, ACHIEVEMENTS };
+use crate::models::effect::{ Effect, Object };
 use crate::Model;
-use crate::lib::utils::retrieve_achievements;
+use crate::lib::utils::{ retrieve_achievements, to_rgba };
+use crate::lib::utils_for_effect::add_effect;
+use crate::lib::draw_view_lib::draw_effect_view::PADDING;
 
 pub struct TickerObject {
     pub category: String,
@@ -37,28 +46,39 @@ impl Ticker {
         self.observer_list.push(achievement);
     }
 
-    // fn remove_observer(&mut self, idx: &usize) {
-    //     self.observer_list.remove(*idx);
-    // }
-    fn update_observer(&mut self, idx: &usize, app_time: f32) {
+    fn update_observer(&mut self, idx: &usize) {
         let localtime = Local::now().timestamp();
         self.observer_list[*idx].achieved_at = localtime;
-        self.observer_list[*idx].achieved_app_time = app_time;
         self.observer_list[*idx].notified = true;
     }
 
-    pub fn notify_observer(&mut self, model: &Model, app_time: f32) {
+    pub fn notify_observer(&mut self, model: &mut Model, win: &Rect<DrawScalar>) {
         let t_obj = self.state_changed(model);
         let mut updated_observer_idx: Vec<usize> = vec![];
         if t_obj.changed {
             for (idx, o) in self.observer_list.iter().enumerate() {
                 if o.update(&t_obj) {
+                    let effect = Effect::new(
+                        2.0,
+                        Object::Ticker,
+                        pt2(win.right() - PADDING * 2.0, win.top() - PADDING),
+                        vec2(200.0, 20.0),
+                        (to_rgba(WHITE), to_rgba(WHITE)),
+                        vec![
+                            ("shape_effect", "keep"),
+                            ("color_effect", "fadeout"),
+                            ("shape", "rect_ticker"),
+                            ("msg", &o.notify_msg())
+                        ]
+                    );
+                    add_effect(model, effect);
+
                     updated_observer_idx.push(idx);
                 }
             }
 
             for i in updated_observer_idx.iter().rev() {
-                self.update_observer(i, app_time);
+                self.update_observer(i);
             }
         }
     }
@@ -98,7 +118,6 @@ impl Ticker {
                         x.3,
                         x.4,
                         0, // 1970-01-01 0:00:00
-                        0.0, // app_timeの初期値
                         false, // 未通知フラグ
                         // &mut ticker
                     );
